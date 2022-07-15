@@ -33,7 +33,7 @@ class JokeList extends Component {
                 <button className="JokeList-getmore">New Jokes</button>
                 </div>
                
-                <div className="Jokelist-jokes">
+                <div className="JokeList-jokes">
                     {this.state.jokes.map(j => (<div>
                         {j}
                     </div>))}
