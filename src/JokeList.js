@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import acios from 'axios';
+import axios from 'axios';
 
 class JokeList extends Component {
     static defaultProps = {
@@ -17,8 +17,8 @@ class JokeList extends Component {
             let res = await axios.get('https://icanhazdadjoke.com/', {headers: {Accept: "application/json"}})
             jokes.push(res.data.joke)
         }
-        console.log(jokes);
         this.setState({jokes: jokes});
+        console.log(jokes);
       
     }
     render(){
