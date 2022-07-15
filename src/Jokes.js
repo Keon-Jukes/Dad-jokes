@@ -12,7 +12,8 @@ class Jokes extends Component {
     }
 
     async componentDidMount(){
-        let joke = await axios.get(JOKES_URL);
+        let res = await axios.get(JOKES_URL, {headers: {Accept: "application/json"}});
+        let joke = res.data.joke;
         // this.setState({...this.state.jokes, jokes: joke.data})
         console.log('this is jokes --->', joke);
 
