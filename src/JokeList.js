@@ -37,7 +37,7 @@ class JokeList extends Component {
 
     render(){
         return(
-            <div className="Jokelist">
+            <div className="JokeList">
                 <div className="JokeList-sidebar">
                 <h1 className="JokeList-title">
                     <span>Dad </span>Jokes
