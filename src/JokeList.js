@@ -15,6 +15,7 @@ class JokeList extends Component {
             jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]")
         };
         this.handleVote = this.handleVote.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
     componentDidMount(){
         if(this.state.jokes.length === 0) this.getJokes();
@@ -26,9 +27,16 @@ class JokeList extends Component {
             let res = await axios.get('https://icanhazdadjoke.com/', {headers: {Accept: "application/json"}})
             jokes.push({id: uuid(), text : res.data.joke, votes: 0})
         }
-        this.setState({jokes: jokes});
+        // get more jokes and copy existing ones for persistence
+        this.setState(st => ({
+            jokes: [...st.jokes, ...jokes]
+        }));
         window.localStorage.setItem("jokes", JSON.stringify(jokes));
         // console.log(jokes);
+    }
+
+    handleClick(){
+        this.getJokes();
     }
 
     handleVote(id, delta){
@@ -36,8 +44,9 @@ class JokeList extends Component {
             st => ({
                 jokes: st.jokes.map(j =>
                     j.id === id ? {...j, votes: j.votes + delta} : j)
-            })
-        )
+            }),
+            () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes))
+        );
     }
 
     render(){
@@ -48,7 +57,7 @@ class JokeList extends Component {
                     <span>Dad </span>Jokes
                 </h1>
                 <img src={'https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg'} alt='laughing-emoji'/>
-                <button className="JokeList-getmore">New Jokes</button>
+                <button className="JokeList-getmore" onClick={this.handleClick}>New Jokes</button>
                 </div>
                
                 <div className="JokeList-jokes">
