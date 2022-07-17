@@ -30,8 +30,10 @@ class JokeList extends Component {
         // get more jokes and copy existing ones for persistence
         this.setState(st => ({
             jokes: [...st.jokes, ...jokes]
-        }));
-        window.localStorage.setItem("jokes", JSON.stringify(jokes));
+        }),
+            () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes))
+        );
+        // window.localStorage.setItem("jokes", JSON.stringify(jokes));
         // console.log(jokes);
     }
 
