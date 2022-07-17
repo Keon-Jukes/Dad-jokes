@@ -12,8 +12,10 @@ class JokeList extends Component {
         super(props)
         // get jokes array from local storage or parse an array string which will turn into a array
         this.state = {
-            jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]")
+            jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]"),
+            loading: false
         };
+        this.seenJokes = new Set(this.state.jokes.map(j => j.text));
         this.handleVote = this.handleVote.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
@@ -22,23 +24,37 @@ class JokeList extends Component {
     }
 
     async getJokes(){
+        try{
         let jokes = [];
         while(jokes.length < this.props.numOfJokesToGet){
             let res = await axios.get('https://icanhazdadjoke.com/', {headers: {Accept: "application/json"}})
-            jokes.push({id: uuid(), text : res.data.joke, votes: 0})
+            let newJoke = res.data.joke;
+            //use a set to spot duplicate strings and prevent them from being added again since the jokes are already in local storage and on the state
+            if(!this.seenJokes.has(newJoke)){
+                jokes.push({id: uuid(), text : newJoke, votes: 0})
+            } else {
+                console.log('Found a duplicate! -->', newJoke);
+            }
+           
+           
         }
         // get more jokes and copy existing ones for persistence
         this.setState(st => ({
+            loading: false,
             jokes: [...st.jokes, ...jokes]
         }),
-            () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes))
-        );
-        // window.localStorage.setItem("jokes", JSON.stringify(jokes));
-        // console.log(jokes);
+            () => window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes)) 
+            );
+    } catch(err){
+        console.log(err)
+        alert(err);
+        this.setState({loading: false})
+    }
+
     }
 
     handleClick(){
-        this.getJokes();
+        this.setState({loading: true}, this.getJokes);
     }
 
     handleVote(id, delta){
@@ -52,6 +68,15 @@ class JokeList extends Component {
     }
 
     render(){
+        //add loading state at begginning to run whenver the items are loading
+        if(this.state.loading){
+            return (
+                <div className="JokeList-spinner"> 
+                <i className="far fa-8x fa-laugh fa-spin" />
+                <h1>Loading...</h1>
+                 </div>   
+            )
+        }
         return(
             <div className="JokeList">
                 <div className="JokeList-sidebar">
